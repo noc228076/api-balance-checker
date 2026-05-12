@@ -90,15 +90,6 @@
       @close="showSettings = false"
       @toggle-theme="isDark = !isDark"
     />
-
-    <!-- 确认弹窗 -->
-    <ConfirmModal
-      :visible="showConfirm"
-      :title="confirmData.title"
-      :message="confirmData.message"
-      @confirm="handleConfirm"
-      @cancel="showConfirm = false"
-    />
   </div>
 </template>
 
@@ -110,15 +101,11 @@ import BalanceCard from './components/BalanceCard.vue'
 import BalanceChart from './components/BalanceChart.vue'
 import AddKeyModal from './components/AddKeyModal.vue'
 import SettingsModal from './components/SettingsModal.vue'
-import ConfirmModal from './components/ConfirmModal.vue'
 
 const showModal = ref(false)
 const showSettings = ref(false)
-const showConfirm = ref(false)
 const isDark = ref(false)
 const editingKey = ref(null)
-const confirmCallback = ref(null)
-const confirmData = ref({ title: '', message: '' })
 
 const hasResults = computed(() => {
   return store.keys.some(k => store.results[k.id] && !store.results[k.id].error)
@@ -179,22 +166,8 @@ function editKey(keyData) {
 }
 
 function removeKey(id) {
-  const key = store.keys.find(k => k.id === id)
-  confirmData.value = {
-    title: '确认删除',
-    message: `确定要删除 API Key "${key?.name || '未命名'}" 吗？此操作不可恢复。`
-  }
-  confirmCallback.value = () => {
+  if (confirm('确定要删除这个 API Key 吗？')) {
     store.removeKey(id)
-    showConfirm.value = false
-  }
-  showConfirm.value = true
-}
-
-function handleConfirm() {
-  if (confirmCallback.value) {
-    confirmCallback.value()
-    confirmCallback.value = null
   }
 }
 

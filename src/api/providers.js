@@ -134,56 +134,28 @@ const PROVIDERS = {
       const url = baseUrl || this.baseUrl
       const headers = { Authorization: `Bearer ${apiKey}` }
 
-      let lastError = null
-
       try {
-        console.log('[DeepSeek] 尝试查询余额...')
         const res = await fetch(`${url}/user/balance`, { headers })
-        console.log('[DeepSeek] user/balance 响应状态:', res.status)
-        
         if (res.ok) {
           const data = await res.json()
-          console.log('[DeepSeek] user/balance 响应数据:', JSON.stringify(data, null, 2))
-          
-          if (data.balance_infos && data.balance_infos.length > 0) {
-            const info = data.balance_infos[0]
+          if (data.balance_infos) {
+            const info = data.balance_infos[0] || {}
             const total = parseFloat(info.total_balance || 0)
             const granted = parseFloat(info.granted_balance || 0)
             const topped = parseFloat(info.topped_up_balance || 0)
-            
             return {
               total: total,
               used: 0,
               remaining: total,
               currency: info.currency || 'CNY',
               expiresAt: null,
-              detail: { 
-                granted, 
-                topped_up: topped,
-                balance_infos: data.balance_infos
-              }
+              detail: { granted, topped_up: topped }
             }
-          } else {
-            console.warn('[DeepSeek] 未找到 balance_infos 字段')
           }
-        } else {
-          const errorText = await res.text()
-          console.log('[DeepSeek] user/balance 错误响应:', errorText)
-          lastError = new Error(`API 返回错误 (${res.status}): ${errorText}`)
         }
-      } catch (e) {
-        console.error('[DeepSeek] user/balance 请求失败:', e.message)
-        lastError = e
-      }
+      } catch (e) { /* fallback */ }
 
-      // 最后尝试 OneAPI 兼容接口
-      console.log('[DeepSeek] 尝试 OneAPI 兼容接口...')
-      try {
-        return await queryOneApiBalance(apiKey, url)
-      } catch (oneApiError) {
-        console.error('[DeepSeek] OneAPI 兼容接口也失败了:', oneApiError.message)
-        throw lastError || new Error('无法查询 DeepSeek 余额，请检查 API Key 是否正确')
-      }
+      return await queryOneApiBalance(apiKey, url)
     }
   },
 
@@ -716,12 +688,11 @@ const PROVIDERS = {
             remaining: 0,
             currency: 'USD',
             expiresAt: null,
-            note: '✅ API Key 验证成功！GitHub Copilot 为订阅制服务，无余额概念。',
+            note: 'GitHub Copilot 为订阅制服务，无余额概念。API Key 验证成功！',
             detail: {
               login: userInfo.login,
               name: userInfo.name,
-              email: userInfo.email,
-              avatar_url: userInfo.avatar_url
+              email: userInfo.email
             }
           }
         } else {
@@ -900,50 +871,28 @@ async function queryOneApiBalance(apiKey, baseUrl) {
     '/api/user/dashboard',
     '/v1/dashboard/billing/subscription',
     '/api/user/self',
-    '/api/status',
-    '/api/user/info',
-    '/v1/user/info'
+    '/api/status'
   ]
 
   for (const endpoint of endpoints) {
     try {
-      console.log(`[OneAPI] 尝试端点: ${endpoint}`)
       const res = await fetch(`${baseUrl}${endpoint}`, { headers })
-      
-      if (!res.ok) {
-        console.log(`[OneAPI] ${endpoint} 响应状态: ${res.status}`)
-        continue
-      }
+      if (!res.ok) continue
 
       const data = await res.json()
-      console.log(`[OneAPI] ${endpoint} 响应数据:`, JSON.stringify(data, null, 2))
 
-      // 尝试解析 one-api / new-api 格式
+      // 尝试解析
       if (data.data) {
         const d = data.data
-        
-        // 支持多种字段名
-        const quota = d.quota ?? d.total_quota ?? d.balance ?? d.total_balance ?? 0
-        const usedQuota = d.used_quota ?? d.used_balance ?? d.consumed_quota ?? 0
-        const remaining = quota - usedQuota
-        
-        if (quota > 0 || usedQuota > 0) {
-          return {
-            total: quota / 500000,  // one-api 通常使用 500000 作为单位
-            used: usedQuota / 500000,
-            remaining: remaining / 500000,
-            currency: 'USD',
-            expiresAt: null,
-            detail: {
-              raw_quota: quota,
-              raw_used: usedQuota,
-              conversion_rate: 500000
-            }
-          }
+        return {
+          total: d.quota != null ? d.quota / 500000 : (d.total || 0),
+          used: d.used_quota != null ? d.used_quota / 500000 : (d.used || 0),
+          remaining: d.quota != null ? (d.quota - (d.used_quota || 0)) / 500000 : (d.remaining || 0),
+          currency: 'USD',
+          expiresAt: null
         }
       }
 
-      // 尝试 OpenAI 格式
       if (data.hard_limit_usd != null) {
         return {
           total: data.hard_limit_usd,
@@ -953,19 +902,7 @@ async function queryOneApiBalance(apiKey, baseUrl) {
           expiresAt: data.access_until ? new Date(data.access_until * 1000).toLocaleDateString() : null
         }
       }
-      
-      // 尝试直接返回 balance 字段
-      if (data.balance !== undefined) {
-        return {
-          total: data.balance,
-          used: data.used || 0,
-          remaining: data.balance - (data.used || 0),
-          currency: data.currency || 'CNY',
-          expiresAt: null
-        }
-      }
     } catch (e) {
-      console.error(`[OneAPI] ${endpoint} 请求失败:`, e.message)
       continue
     }
   }

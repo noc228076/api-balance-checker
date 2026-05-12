@@ -75,6 +75,10 @@
               <span class="about-value">v1.0.0</span>
             </div>
             <div class="about-item">
+              <span class="about-label">技术栈</span>
+              <span class="about-value">Vue 3 + Vite + Chart.js</span>
+            </div>
+            <div class="about-item">
               <span class="about-label">支持平台</span>
               <span class="about-value platforms">
                 OpenAI, Claude, Gemini, DeepSeek, 硅基流动, 智谱AI, OpenRouter, MiniMax, GitHub, Kimi, Mimo

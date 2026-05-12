@@ -1,8 +1,7 @@
 {
   "name": "api-balance-checker",
-  "version": "1.0.0",
-  "description": "一个简洁优雅的多平台 API Key 余额查询工具，支持 OpenAI、硅基流动、智谱AI等多个平台",
   "private": true,
+  "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -10,16 +9,6 @@
     "preview": "vite preview",
     "lint": "eslint --ext .js,.vue src"
   },
-  "keywords": [
-    "api",
-    "balance",
-    "openai",
-    "chatgpt",
-    "siliconflow",
-    "zhipu",
-    "vue3",
-    "vite"
-  ],
   "dependencies": {
     "@vueuse/core": "^14.3.0",
     "chart.js": "^4.5.1",

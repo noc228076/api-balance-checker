@@ -32,30 +32,11 @@
       <span class="error-icon">⚠️</span>
       <div class="error-content">
         <span class="error-text">{{ result.error }}</span>
-        <span v-if="keyData.provider === 'openai' && result.error.includes('403')" class="error-hint">
-          💡 403 错误通常表示 API Key 没有查询余额的权限：<br/>
-          • 个人 API Key 通常可以正常查询<br/>
-          • 组织 API Key 需要管理员权限才能访问账单信息<br/>
-          • 建议联系组织管理员获取权限<br/>
-          • 或使用个人账户的 API Key
-        </span>
-        <span v-else-if="keyData.provider === 'openai' && result.error.includes('401')" class="error-hint">
-          💡 401 错误表示 API Key 无效或已过期：<br/>
-          • 确认 API Key 以 sk- 开头<br/>
-          • 检查是否有空格或换行符<br/>
-          • 前往 platform.openai.com 重新生成 Key
-        </span>
-        <span v-else-if="keyData.provider === 'siliconflow'" class="error-hint">
+        <span v-if="keyData.provider === 'siliconflow'" class="error-hint">
           💡 提示：请确认 API Key 是否正确，或尝试使用自定义平台配置正确的 Base URL
         </span>
         <span v-else-if="keyData.provider === 'zhipuai'" class="error-hint">
           💡 提示：智谱AI的API Key通常以 . 开头，请确认格式正确，或尝试使用自定义平台配置
-        </span>
-        <span v-else-if="result.error.includes('403')" class="error-hint">
-          💡 403 错误表示权限不足：<br/>
-          • 确认 API Key 是否有查询余额的权限<br/>
-          • 某些平台需要在控制台开启相关功能<br/>
-          • 尝试使用"自定义"平台类型手动配置
         </span>
       </div>
     </div>
