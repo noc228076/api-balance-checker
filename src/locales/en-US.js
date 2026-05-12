@@ -122,6 +122,7 @@ export default {
     openrouter: 'OpenRouter',
     minimax: 'MiniMax',
     github: 'GitHub',
+    bailian: 'Alibaba Bailian',
     kimi: 'Kimi',
     mimo: 'Mimo',
     custom: 'Custom'

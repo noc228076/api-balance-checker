@@ -125,6 +125,7 @@ export default {
     openrouter: 'OpenRouter',
     minimax: 'MiniMax',
     github: 'GitHub',
+    bailian: '阿里云百炼',
     kimi: 'Kimi',
     mimo: 'Mimo',
     custom: '自定义'

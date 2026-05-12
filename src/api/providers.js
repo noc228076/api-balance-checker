@@ -709,6 +709,75 @@ const PROVIDERS = {
     }
   },
 
+  bailian: {
+    name: '阿里云百炼 (Bailian)',
+    color: '#ff6a00',
+    icon: '☁️',
+    baseUrl: 'https://dashscope.aliyuncs.com',
+    async queryBalance(apiKey, baseUrl) {
+      const url = baseUrl || this.baseUrl
+      const headers = {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json'
+      }
+
+      let lastError = null
+
+      try {
+        // 尝试查询账户余额
+        console.log('[阿里云百炼] 尝试查询账户余额...')
+        const res = await fetch(`${url}/api/v1/account/balance`, { headers })
+        console.log('[阿里云百炼] api/v1/account/balance 响应状态:', res.status)
+        
+        if (res.ok) {
+          const data = await res.json()
+          console.log('[阿里云百炼] api/v1/account/balance 响应数据:', JSON.stringify(data, null, 2))
+          
+          // 解析余额数据
+          if (data.data && data.data.balance !== undefined) {
+            const balanceData = data.data
+            return {
+              total: balanceData.total_balance || balanceData.balance,
+              used: balanceData.used_balance || 0,
+              remaining: balanceData.balance,
+              currency: 'CNY',
+              expiresAt: null,
+              detail: {
+                unit: '元',
+                total_balance: balanceData.total_balance,
+                used_balance: balanceData.used_balance
+              }
+            }
+          } else if (data.balance !== undefined) {
+            return {
+              total: data.balance,
+              used: 0,
+              remaining: data.balance,
+              currency: 'CNY',
+              expiresAt: null
+            }
+          }
+        } else {
+          const errorText = await res.text()
+          console.log('[阿里云百炼] api/v1/account/balance 错误响应:', errorText)
+          lastError = new Error(`API 返回错误 (${res.status}): ${errorText}`)
+        }
+      } catch (e) {
+        console.error('[阿里云百炼] api/v1/account/balance 请求失败:', e.message)
+        lastError = e
+      }
+
+      // 最后尝试 OneAPI 兼容接口
+      console.log('[阿里云百炼] 尝试 OneAPI 兼容接口...')
+      try {
+        return await queryOneApiBalance(apiKey, url)
+      } catch (oneApiError) {
+        console.error('[阿里云百炼] OneAPI 兼容接口也失败了:', oneApiError.message)
+        throw lastError || new Error('无法查询阿里云百炼余额。\n\n可能原因：\n1. API Key 不正确或已过期\n2. Base URL 配置错误（默认：https://dashscope.aliyuncs.com）\n3. API Key 没有查询余额的权限\n4. 网络连接问题\n\n提示：可以尝试使用"自定义"平台类型手动配置')
+      }
+    }
+  },
+
   kimi: {
     name: 'Kimi (月之暗面)',
     color: '#6c5ce7',
