@@ -1,4 +1,4 @@
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import zhCN from './zh-CN.js'
 import enUS from './en-US.js'
 
@@ -11,8 +11,8 @@ const messages = {
 const savedLocale = localStorage.getItem('locale') || 'zh-CN'
 const currentLocale = ref(savedLocale)
 
-// 获取翻译文本
-export function t(key, params = {}) {
+// 获取翻译文本的核心函数
+function translate(key, params = {}) {
   const keys = key.split('.')
   let value = messages[currentLocale.value]
   
@@ -34,6 +34,23 @@ export function t(key, params = {}) {
   }
   
   return value || key
+}
+
+// 创建响应式的翻译函数 - 用于组件中使用
+export function useI18n() {
+  // 创建一个计算属性，当 currentLocale 变化时自动重新计算
+  const t = (key, params = {}) => {
+    // 访问 currentLocale.value 以建立响应式依赖
+    const _locale = currentLocale.value
+    return translate(key, params)
+  }
+  
+  return { t, currentLocale }
+}
+
+// 非响应式版本 - 用于不需要响应式的场景
+export function t(key, params = {}) {
+  return translate(key, params)
 }
 
 // 切换语言

@@ -107,24 +107,22 @@
 <script setup>
 import { ref } from 'vue'
 import { store } from '../stores/keyStore.js'
-import { t, setLocale, getLocale } from '../locales/index.js'
+import { useI18n, setLocale } from '../locales/index.js'
+
+const { t, currentLocale } = useI18n()
 
 const props = defineProps({
   visible: Boolean,
   isDark: Boolean
 })
 
-defineEmits(['close', 'toggle-theme'])
+const emit = defineEmits(['close', 'toggle-theme'])
 
 const fileInput = ref(null)
-const currentLocale = ref(getLocale())
 
 function handleLocaleChange(event) {
   const newLocale = event.target.value
   setLocale(newLocale)
-  currentLocale.value = newLocale
-  // 刷新页面以应用新语言
-  window.location.reload()
 }
 
 function exportData() {

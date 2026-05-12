@@ -105,20 +105,18 @@ import BalanceCard from './components/BalanceCard.vue'
 import BalanceChart from './components/BalanceChart.vue'
 import AddKeyModal from './components/AddKeyModal.vue'
 import SettingsModal from './components/SettingsModal.vue'
-import { getLocale, setLocale } from './locales/index.js'
+import { useI18n, setLocale } from './locales/index.js'
+
+const { t, currentLocale } = useI18n()
 
 const showModal = ref(false)
 const showSettings = ref(false)
 const isDark = ref(false)
 const editingKey = ref(null)
-const currentLocale = ref(getLocale())
 
 function handleLocaleChange(event) {
   const newLocale = event.target.value
   setLocale(newLocale)
-  currentLocale.value = newLocale
-  // 刷新页面以应用新语言
-  window.location.reload()
 }
 
 const hasResults = computed(() => {

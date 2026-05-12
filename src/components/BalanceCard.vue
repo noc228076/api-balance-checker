@@ -107,7 +107,9 @@
 <script setup>
 import { computed } from 'vue'
 import PROVIDERS from '../api/providers.js'
-import { t } from '../locales/index.js'
+import { useI18n } from '../locales/index.js'
+
+const { t } = useI18n()
 
 const props = defineProps({
   keyData: Object,
