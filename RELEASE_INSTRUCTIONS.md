@@ -1,50 +1,78 @@
 # GitHub Release 创建指南
 
-## 📦 Release 准备完成
+## 📦 正确的项目结构
 
-项目已成功构建，所有发布包已生成在 `releases/` 目录中：
+```
+api-balance-checker/
+├── src/              # 源代码
+├── public/           # 静态资源
+├── package.json      # 项目配置
+├── vite.config.js    # Vite 配置
+├── .gitignore        # Git 忽略文件
+├── prepare-release.sh # Release 准备脚本 (Linux/Mac)
+├── prepare-release.bat # Release 准备脚本 (Windows)
+└── README.md        # 项目说明
+```
 
-### 🎯 生成的发布包
+**注意**：`releases/` 文件夹不应该提交到 git，它只用于本地生成发布包。
 
-1. **api-balance-checker-web.zip** (96 KB)
-   - 用途：Web 服务器直接部署
-   - 包含：完整的构建文件（index.html, CSS, JS）
+## 🚀 创建 Release 的步骤
 
-2. **nginx-deploy.zip** (95 KB)
-   - 用途：Nginx 服务器部署
-   - 包含：前端文件 + nginx.conf 配置文件
+### 方法一：使用自动化脚本（推荐）
 
-3. **vercel-deploy.zip** (95 KB)
-   - 用途：Vercel 平台部署
-   - 包含：前端文件 + vercel.json 配置文件
+1. **在本地生成发布包**：
+   ```bash
+   # Linux/Mac
+   ./prepare-release.sh
+   
+   # Windows
+   prepare-release.bat
+   ```
 
-4. **netlify-deploy.zip** (95 KB)
-   - 用途：Netlify 平台部署
-   - 包含：前端文件 + netlify.toml 配置文件
+2. **这会生成两个文件**：
+   - `api-balance-checker-web.zip` - Web 服务器部署包
+   - `api-balance-checker-source.zip` - 源代码包（不含 node_modules 和 dist）
 
-5. **api-balance-checker-source.zip** (39 KB)
-   - 用途：源代码备份
-   - 包含：完整源代码（排除 node_modules 和 dist）
+### 方法二：手动生成
 
-## 🚀 手动创建 GitHub Release
+1. **构建项目**：
+   ```bash
+   npm install
+   npm run build
+   ```
 
-### 步骤 1：访问 GitHub 仓库
+2. **创建发布包**：
+   ```bash
+   # 创建 Web 部署包
+   zip -r api-balance-checker-web.zip dist/*
+   
+   # 创建源代码包（排除不必要的文件）
+   zip -r api-balance-checker-source.zip . -x "node_modules/*" "dist/*" ".git/*"
+   ```
 
-打开浏览器访问：https://github.com/noc228076/api-balance-checker
+## 📤 上传到 GitHub Release
 
-### 步骤 2：创建 Release
+1. **访问 GitHub 仓库**：
+   https://github.com/noc228076/api-balance-checker
 
-1. 点击仓库页面右侧的 **"Releases"** 标签
-2. 点击 **"Create a new release"** 按钮
-3. **Tag version**: 输入 `v1.0.0`
-4. **Release title**: 输入 `API Balance Checker v1.0.0`
-5. **Description**: 复制以下内容：
+2. **创建 Release**：
+   - 点击 "Releases" → "Create a new release"
+   - **Tag version**: `v1.0.0`
+   - **Release title**: `API Balance Checker v1.0.0`
+   - **Description**: 填写版本说明
+
+3. **上传文件**：
+   - 上传 `api-balance-checker-web.zip`
+   - 上传 `api-balance-checker-source.zip`
+
+4. **发布**
+
+## 📋 Release 说明模板
 
 ```
 🎉 API Balance Checker v1.0.0 正式发布！
 
 ## 🌟 新版本特性
-
 - 🔑 多平台支持：OpenAI、硅基流动、智谱AI、DeepSeek 等
 - 📊 图表展示：柱状图、饼图、堆叠图
 - 💳 卡片式界面：美观直观的余额展示
@@ -54,21 +82,22 @@
 
 ## 📦 下载说明
 
-### Web 部署包
-- api-balance-checker-web.zip：适用于任何 Web 服务器
+### Web 部署包 (api-balance-checker-web.zip)
+- 适用于任何 Web 服务器
 - 解压后直接部署即可
 
-### 平台特定部署包
-- nginx-deploy.zip：包含 Nginx 配置
-- vercel-deploy.zip：包含 Vercel 配置
-- netlify-deploy.zip：包含 Netlify 配置
-
-### 源代码包
-- api-balance-checker-source.zip：完整源代码
+### 源代码包 (api-balance-checker-source.zip)
+- 完整源代码
+- 需要运行 `npm install` 和 `npm run build`
 
 ## 🚀 快速开始
 
-### 本地运行
+### Web 服务器部署
+1. 下载 api-balance-checker-web.zip
+2. 解压到 Web 服务器根目录
+3. 配置服务器支持 SPA 路由
+
+### 本地开发
 ```bash
 # 解压源代码包
 unzip api-balance-checker-source.zip
@@ -79,81 +108,33 @@ npm install
 
 # 启动开发服务器
 npm run dev
-
-# 访问 http://localhost:5173
 ```
 
-### 在线部署
-
-**Vercel**
-1. 下载 vercel-deploy.zip
-2. 上传到 Vercel
-3. 自动部署
-
-**Netlify**
-1. 下载 netlify-deploy.zip
-2. 上传到 Netlify
-3. 自动部署
-
-**Nginx 服务器**
-1. 下载 nginx-deploy.zip
-2. 解压到 /usr/share/nginx/html
-3. 配置 nginx.conf
-4. 重启 nginx
-
-## 🔗 相关链接
-
-- 项目主页：https://github.com/noc228076/api-balance-checker
-- 问题反馈：https://github.com/noc228076/api-balance-checker/issues
-
-感谢使用！🙏
+## 🔗 项目地址
+https://github.com/noc228076/api-balance-checker
 ```
 
-6. 点击 **"Publish release"** 按钮
+## 🎯 最佳实践
 
-### 步骤 3：上传发布包
+1. **不要在代码仓库中包含构建产物**
+   - .zip 文件应该通过脚本生成
+   - 构建产物应该被 .gitignore 忽略
 
-创建 Release 后，你需要上传以下文件：
+2. **使用语义化版本**
+   - v1.0.0（第一个正式版本）
+   - v1.0.1（修复 bug）
+   - v1.1.0（新功能）
+   - v2.0.0（重大更新）
 
-1. `releases/api-balance-checker-web.zip`
-2. `releases/nginx-deploy.zip`
-3. `releases/vercel-deploy.zip`
-4. `releases/netlify-deploy.zip`
-5. `releases/api-balance-checker-source.zip`
+3. **定期创建 Release**
+   - 每次新版本发布时创建
+   - 保持 Release 说明的更新
 
-## 🎯 Release 完成后
+## 🔄 更新流程
 
-Release 创建成功后，用户就可以：
-
-- 在 GitHub Releases 页面下载所有发布包
-- 通过 tag `v1.0.0` 获取特定版本的代码
-- 查看 Release 说明了解如何部署
-
-## 📝 注意事项
-
-1. 确保 Release 的 tag 格式正确（v1.0.0）
-2. 上传所有 ZIP 文件
-3. Release 说明要详细清晰
-4. 可以添加 Release notes 来记录版本更新内容
-
----
-
-## 🔄 自动构建脚本
-
-以后需要更新 Release 时，可以运行：
-
-```bash
-# 构建 Web 版本
-npm run build
-
-# 创建发布包
-./build-releases.sh  # Linux/Mac
-build-releases.bat   # Windows
-
-# 提交更改
-git add releases/ build-releases.*
-git commit -m "Update release packages"
-git push origin master
-
-# 然后手动创建新的 Release
-```
+1. 修改代码
+2. 提交更改：`git commit -m "描述更改"`
+3. 推送到 GitHub：`git push origin master`
+4. 运行 prepare 脚本生成发布包
+5. 创建新的 Release 并上传包
+6. 标记版本：`git tag v1.0.1 && git push origin v1.0.1`

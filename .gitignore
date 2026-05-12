@@ -7,10 +7,31 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Dependencies
 node_modules
+npm-debug.log*
+
+# Build outputs
 dist
 dist-ssr
 *.local
+
+# Release packages (will be generated locally)
+releases/
+*.zip
+
+# IDE
+.vscode/*
+!.vscode/extensions.json
+.idea
+*.sw?
+
+# OS
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
 
 # Editor directories and files
 .vscode/*
