@@ -1,6 +1,6 @@
 <template>
   <div class="chart-panel">
-    <h3 class="chart-title">额度概览</h3>
+    <h3 class="chart-title">{{ t('chart.title') }}</h3>
     <div class="chart-tabs">
       <button
         v-for="tab in tabs"
@@ -25,6 +25,9 @@ import {
   CategoryScale, LinearScale, BarElement,
   ArcElement, Tooltip, Legend
 } from 'chart.js'
+import { useI18n } from '../locales/index.js'
+
+const { t } = useI18n()
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Tooltip, Legend)
 
@@ -35,9 +38,9 @@ const props = defineProps({
 })
 
 const tabs = [
-  { key: 'bar', label: '柱状图' },
-  { key: 'doughnut', label: '饼图' },
-  { key: 'stacked', label: '堆叠图' }
+  { key: 'bar', label: t('chart.bar') },
+  { key: 'doughnut', label: t('chart.doughnut') },
+  { key: 'stacked', label: t('chart.stacked') }
 ]
 const activeTab = ref('bar')
 
@@ -52,7 +55,7 @@ const barData = computed(() => ({
   labels: labels.value,
   datasets: [
     {
-      label: '剩余额度',
+      label: t('chart.remaining'),
       data: validEntries.value.map(k => props.results[k.id]?.remaining || 0),
       backgroundColor: colors.value.map(c => c + '99'),
       borderColor: colors.value,
@@ -60,7 +63,7 @@ const barData = computed(() => ({
       borderRadius: 8
     },
     {
-      label: '已使用',
+      label: t('chart.used'),
       data: validEntries.value.map(k => props.results[k.id]?.used || 0),
       backgroundColor: 'rgba(239, 68, 68, 0.4)',
       borderColor: '#ef4444',
@@ -109,13 +112,13 @@ const stackedData = computed(() => ({
   labels: labels.value,
   datasets: [
     {
-      label: '已使用',
+      label: t('chart.used'),
       data: validEntries.value.map(k => props.results[k.id]?.used || 0),
       backgroundColor: 'rgba(239, 68, 68, 0.6)',
       borderRadius: { topLeft: 0, topRight: 0, bottomLeft: 8, bottomRight: 8 }
     },
     {
-      label: '剩余额度',
+      label: t('chart.remaining'),
       data: validEntries.value.map(k => props.results[k.id]?.remaining || 0),
       backgroundColor: colors.value.map(c => c + '99'),
       borderRadius: { topLeft: 8, topRight: 8, bottomLeft: 0, bottomRight: 0 }

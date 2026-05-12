@@ -30,7 +30,7 @@ export default {
     totalBalance: 'Total Balance',
     totalRemaining: 'Total Remaining',
     totalUsed: 'Total Used',
-    keyCount: 'Keys',
+    keyCount: 'API Keys',
     platformCount: 'Platforms',
     currency: 'Currency'
   },
@@ -99,15 +99,12 @@ export default {
     cleared: '✅ All data cleared'
   },
   chart: {
-    barChart: 'Bar Chart',
-    pieChart: 'Pie Chart',
-    stackedChart: 'Stacked Chart',
-    balanceComparison: 'Balance Comparison',
-    distribution: 'Distribution',
-    usedVsRemaining: 'Used vs Remaining',
-    used: 'Used',
-    remaining: 'Remaining',
-    noData: 'No data to display'
+    title: 'Quota Overview',
+    bar: 'Bar Chart',
+    doughnut: 'Pie Chart',
+    stacked: 'Stacked Chart',
+    remaining: 'Remaining Quota',
+    used: 'Used'
   },
   confirm: {
     deleteTitle: 'Confirm Delete',
@@ -135,6 +132,6 @@ export default {
     permissionDenied: 'Permission denied',
     timeout: 'Request timeout',
     unknownError: 'Unknown error',
-    openai403Hint: '💡 403 error usually means the API Key lacks permission to query balance:<br/>• Personal API Keys can usually query normally<br/>• Organization API Keys require admin permission to access billing<br/>• Contact your organization admin for permission<br/>• Or use a personal account API Key'
+    openai403Hint: '💡 403 error usually means the API Key lacks balance query permissions:<br/>• Personal API Keys can usually query normally<br/>• Organization API Keys require admin permission to access billing information<br/>• Contact your organization admin for permission<br/>• Or use a personal account API Key'
   }
 }

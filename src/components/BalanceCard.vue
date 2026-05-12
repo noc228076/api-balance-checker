@@ -32,7 +32,9 @@
       <span class="error-icon">⚠️</span>
       <div class="error-content">
         <span class="error-text">{{ result.error }}</span>
-        <span v-if="keyData.provider === 'siliconflow'" class="error-hint">
+        <span v-if="keyData.provider === 'openai' && result.error.includes('403')" class="error-hint" v-html="t('errors.openai403Hint')">
+        </span>
+        <span v-else-if="keyData.provider === 'siliconflow'" class="error-hint">
           {{ t('card.siliconflowHint') }}
         </span>
         <span v-else-if="keyData.provider === 'zhipuai'" class="error-hint">

@@ -30,7 +30,7 @@ export default {
     totalBalance: '总余额',
     totalRemaining: '总剩余额度',
     totalUsed: '总已使用',
-    keyCount: 'Key 数量',
+    keyCount: 'API Keys',
     platformCount: '平台数量',
     currency: '货币'
   },
@@ -136,5 +136,13 @@ export default {
     timeout: '请求超时',
     unknownError: '未知错误',
     openai403Hint: '💡 403 错误通常表示 API Key 没有查询余额的权限：<br/>• 个人 API Key 通常可以正常查询<br/>• 组织 API Key 需要管理员权限才能访问账单信息<br/>• 建议联系组织管理员获取权限<br/>• 或使用个人账户的 API Key'
+  },
+  chart: {
+    title: '额度概览',
+    bar: '柱状图',
+    doughnut: '饼图',
+    stacked: '堆叠图',
+    remaining: '剩余额度',
+    used: '已使用'
   }
 }

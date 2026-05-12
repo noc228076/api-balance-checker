@@ -30,7 +30,7 @@
     <div class="stats-bar" v-if="hasResults">
       <div class="stat-item">
         <span class="stat-value">{{ store.keys.length }}</span>
-        <span class="stat-label">API Keys</span>
+        <span class="stat-label">{{ t('stats.keyCount') }}</span>
       </div>
       <div class="stat-item">
         <span class="stat-value">${{ totalRemaining }}</span>
