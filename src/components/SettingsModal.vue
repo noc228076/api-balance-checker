@@ -3,18 +3,31 @@
     <div class="modal-overlay" @click="$emit('close')"></div>
     <div class="modal-content">
       <div class="modal-header">
-        <h3>⚙️ 设置</h3>
+        <h3>⚙️ {{ t('settings.title') }}</h3>
         <button class="close-btn" @click="$emit('close')">&times;</button>
       </div>
       
       <div class="modal-body">
         <!-- 主题设置 -->
         <div class="setting-section">
-          <h4 class="section-title">🎨 外观设置</h4>
+          <h4 class="section-title">🎨 {{ t('settings.appearance') }}</h4>
+          
+          <!-- 语言切换 -->
           <div class="setting-item">
             <div class="setting-info">
-              <span class="setting-label">深色模式</span>
-              <span class="setting-desc">切换亮色/暗色主题</span>
+              <span class="setting-label">🌐 {{ t('settings.language') || '语言' }}</span>
+              <span class="setting-desc">{{ t('settings.languageDesc') || '切换显示语言' }}</span>
+            </div>
+            <select class="language-select" :value="currentLocale" @change="handleLocaleChange">
+              <option value="zh-CN">中文</option>
+              <option value="en-US">English</option>
+            </select>
+          </div>
+          
+          <div class="setting-item">
+            <div class="setting-info">
+              <span class="setting-label">{{ t('settings.darkMode') }}</span>
+              <span class="setting-desc">{{ t('settings.darkModeDesc') }}</span>
             </div>
             <label class="toggle-switch">
               <input type="checkbox" :checked="isDark" @change="$emit('toggle-theme')" />
@@ -25,59 +38,59 @@
 
         <!-- 数据管理 -->
         <div class="setting-section">
-          <h4 class="section-title">💾 数据管理</h4>
+          <h4 class="section-title">💾 {{ t('settings.dataManagement') }}</h4>
           
           <div class="setting-item">
             <div class="setting-info">
-              <span class="setting-label">导出配置</span>
-              <span class="setting-desc">将所有 API Key 配置导出为 JSON 文件</span>
+              <span class="setting-label">{{ t('settings.exportConfig') }}</span>
+              <span class="setting-desc">{{ t('settings.exportConfigDesc') }}</span>
             </div>
             <button class="btn-action" @click="exportData">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-              导出
+              {{ t('common.save') }}
             </button>
           </div>
 
           <div class="setting-item">
             <div class="setting-info">
-              <span class="setting-label">导入配置</span>
-              <span class="setting-desc">从 JSON 文件导入 API Key 配置</span>
+              <span class="setting-label">{{ t('settings.importConfig') }}</span>
+              <span class="setting-desc">{{ t('settings.importConfigDesc') }}</span>
             </div>
             <button class="btn-action" @click="triggerImport">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-              导入
+              {{ t('settings.importConfig') }}
             </button>
             <input type="file" ref="fileInput" accept=".json" @change="importData" style="display: none" />
           </div>
 
           <div class="setting-item danger">
             <div class="setting-info">
-              <span class="setting-label">清除所有数据</span>
-              <span class="setting-desc">删除所有 API Key 和查询结果（不可恢复）</span>
+              <span class="setting-label">{{ t('settings.clearData') }}</span>
+              <span class="setting-desc">{{ t('settings.clearDataDesc') }}</span>
             </div>
             <button class="btn-action btn-danger" @click="clearAllData">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-              清除
+              {{ t('common.delete') }}
             </button>
           </div>
         </div>
 
         <!-- 关于信息 -->
         <div class="setting-section">
-          <h4 class="section-title">ℹ️ 关于</h4>
+          <h4 class="section-title">ℹ️ {{ t('settings.about') }}</h4>
           <div class="about-info">
             <div class="about-item">
-              <span class="about-label">应用名称</span>
-              <span class="about-value">API 余额查询工具</span>
+              <span class="about-label">{{ t('settings.appName') }}</span>
+              <span class="about-value">{{ t('app.title') }}</span>
             </div>
             <div class="about-item">
-              <span class="about-label">版本</span>
+              <span class="about-label">{{ t('settings.version') }}</span>
               <span class="about-value">v1.0.0</span>
             </div>
             <div class="about-item">
-              <span class="about-label">支持平台</span>
+              <span class="about-label">{{ t('settings.supportedPlatforms') }}</span>
               <span class="about-value platforms">
-                OpenAI, Claude, Gemini, DeepSeek, 硅基流动, 智谱AI, OpenRouter, MiniMax, GitHub, Kimi, Mimo
+                OpenAI, Claude, Gemini, DeepSeek, SiliconFlow, ZhipuAI, OpenRouter, MiniMax, GitHub, Kimi, Mimo
               </span>
             </div>
           </div>
@@ -85,7 +98,7 @@
       </div>
 
       <div class="modal-footer">
-        <button class="btn-close" @click="$emit('close')">关闭</button>
+        <button class="btn-close" @click="$emit('close')">{{ t('common.close') }}</button>
       </div>
     </div>
   </div>
@@ -94,6 +107,7 @@
 <script setup>
 import { ref } from 'vue'
 import { store } from '../stores/keyStore.js'
+import { t, setLocale, getLocale } from '../locales/index.js'
 
 const props = defineProps({
   visible: Boolean,
@@ -103,6 +117,15 @@ const props = defineProps({
 defineEmits(['close', 'toggle-theme'])
 
 const fileInput = ref(null)
+const currentLocale = ref(getLocale())
+
+function handleLocaleChange(event) {
+  const newLocale = event.target.value
+  setLocale(newLocale)
+  currentLocale.value = newLocale
+  // 刷新页面以应用新语言
+  window.location.reload()
+}
 
 function exportData() {
   try {
@@ -350,6 +373,28 @@ input:checked + .slider {
 }
 input:checked + .slider:before {
   transform: translateX(24px);
+}
+
+/* Language Select */
+.language-select {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg-input);
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-width: 120px;
+}
+.language-select:hover {
+  border-color: var(--accent);
+}
+.language-select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
 }
 
 /* About Info */

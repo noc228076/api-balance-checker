@@ -9,13 +9,13 @@
         </div>
       </div>
       <div class="card-actions">
-        <button class="action-btn refresh" @click="$emit('refresh')" :disabled="isLoading" title="刷新">
+        <button class="action-btn refresh" @click="$emit('refresh')" :disabled="isLoading" :title="t('card.refresh')">
           <svg :class="{ spinning: isLoading }" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
         </button>
-        <button class="action-btn edit" @click="$emit('edit')" title="编辑">
+        <button class="action-btn edit" @click="$emit('edit')" :title="t('card.edit')">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
         </button>
-        <button class="action-btn delete" @click="$emit('delete')" title="删除">
+        <button class="action-btn delete" @click="$emit('delete')" :title="t('card.delete')">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
         </button>
       </div>
@@ -24,7 +24,7 @@
     <!-- Loading State -->
     <div v-if="isLoading" class="card-loading">
       <div class="loading-spinner"></div>
-      <span>查询中...</span>
+      <span>{{ t('card.querying') }}</span>
     </div>
 
     <!-- Error State -->
@@ -33,10 +33,10 @@
       <div class="error-content">
         <span class="error-text">{{ result.error }}</span>
         <span v-if="keyData.provider === 'siliconflow'" class="error-hint">
-          💡 提示：请确认 API Key 是否正确，或尝试使用自定义平台配置正确的 Base URL
+          {{ t('card.siliconflowHint') }}
         </span>
         <span v-else-if="keyData.provider === 'zhipuai'" class="error-hint">
-          💡 提示：智谱AI的API Key通常以 . 开头，请确认格式正确，或尝试使用自定义平台配置
+          {{ t('card.zhipuaiHint') }}
         </span>
       </div>
     </div>
@@ -45,7 +45,7 @@
     <div v-else-if="result" class="card-result">
       <div class="balance-overview">
         <div class="balance-main">
-          <span class="balance-label">剩余额度</span>
+          <span class="balance-label">{{ t('card.remaining') }}</span>
           <span class="balance-value" :style="{ color: providerInfo.color }">
             {{ currencySymbol }}{{ formatNum(result.remaining) }}
           </span>
@@ -69,15 +69,15 @@
 
       <div class="balance-details">
         <div class="detail-item">
-          <span class="detail-label">总额度</span>
+          <span class="detail-label">{{ t('card.total') }}</span>
           <span class="detail-value">{{ currencySymbol }}{{ formatNum(result.total) }}</span>
         </div>
         <div class="detail-item">
-          <span class="detail-label">已使用</span>
+          <span class="detail-label">{{ t('card.used') }}</span>
           <span class="detail-value used">{{ currencySymbol }}{{ formatNum(result.used) }}</span>
         </div>
         <div class="detail-item" v-if="result.expiresAt">
-          <span class="detail-label">过期时间</span>
+          <span class="detail-label">{{ t('card.expiresAt') }}</span>
           <span class="detail-value">{{ result.expiresAt }}</span>
         </div>
       </div>
@@ -87,19 +87,19 @@
           <div class="bar-fill" :style="{ width: usagePercent + '%', background: providerInfo.color }"></div>
         </div>
         <div class="bar-labels">
-          <span>已用 {{ usagePercent }}%</span>
-          <span>剩余 {{ remainPercent }}%</span>
+          <span>{{ t('card.usedPercent', { percent: usagePercent }) }}</span>
+          <span>{{ t('card.remainingPercent', { percent: remainPercent }) }}</span>
         </div>
       </div>
 
-      <div class="query-time">
-        查询于 {{ result.queriedAt }}
+      <div class="card-footer">
+        <span>{{ t('card.lastUpdate') }} {{ result.queriedAt || t('card.never') }}</span>
       </div>
     </div>
 
     <!-- Empty State -->
     <div v-else class="card-empty">
-      <span>点击刷新按钮查询余额</span>
+      <span>{{ t('card.noData') }}</span>
     </div>
   </div>
 </template>
@@ -107,6 +107,7 @@
 <script setup>
 import { computed } from 'vue'
 import PROVIDERS from '../api/providers.js'
+import { t } from '../locales/index.js'
 
 const props = defineProps({
   keyData: Object,
@@ -114,7 +115,7 @@ const props = defineProps({
   isLoading: Boolean
 })
 
-defineEmits(['refresh', 'delete'])
+defineEmits(['refresh', 'edit', 'delete'])
 
 const providerInfo = computed(() => PROVIDERS[props.keyData.provider] || PROVIDERS.custom)
 

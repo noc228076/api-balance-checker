@@ -3,16 +3,16 @@
     <div class="modal-overlay" @click="$emit('close')"></div>
     <div class="modal-content">
       <div class="modal-header">
-        <h3>{{ editMode ? '编辑' : '添加' }} API Key</h3>
+        <h3>{{ editMode ? t('addModal.editTitle') : t('addModal.title') }}</h3>
         <button class="close-btn" @click="$emit('close')">&times;</button>
       </div>
       <div class="modal-body">
         <div class="form-group">
-          <label>名称</label>
-          <input v-model="form.name" placeholder="例如：我的 OpenAI Key" />
+          <label>{{ t('addModal.name') }}</label>
+          <input v-model="form.name" :placeholder="t('addModal.namePlaceholder')" />
         </div>
         <div class="form-group">
-          <label>平台</label>
+          <label>{{ t('addModal.provider') }}</label>
           <div class="provider-select">
             <button
               v-for="(p, key) in providers"
@@ -27,18 +27,18 @@
           </div>
         </div>
         <div class="form-group">
-          <label>API Key</label>
-          <input v-model="form.apiKey" type="password" placeholder="sk-..." />
+          <label>{{ t('addModal.apiKey') }}</label>
+          <input v-model="form.apiKey" type="password" :placeholder="t('addModal.apiKeyPlaceholder')" />
         </div>
         <div class="form-group">
-          <label>Base URL <span class="optional">(可选，中转站需要填写)</span></label>
-          <input v-model="form.baseUrl" :placeholder="currentProvider?.baseUrl || 'https://api.example.com'" />
+          <label>{{ t('addModal.baseUrl') }} <span class="optional">({{ t('addModal.optional') || '可选，中转站需要填写' }})</span></label>
+          <input v-model="form.baseUrl" :placeholder="currentProvider?.baseUrl || t('addModal.baseUrlPlaceholder')" />
         </div>
       </div>
       <div class="modal-footer">
-        <button class="btn-cancel" @click="$emit('close')">取消</button>
+        <button class="btn-cancel" @click="$emit('close')">{{ t('common.cancel') }}</button>
         <button class="btn-save" @click="handleSave" :disabled="!canSave">
-          {{ editMode ? '保存' : '添加' }}
+          {{ editMode ? t('common.save') : t('nav.addKey') }}
         </button>
       </div>
     </div>
@@ -48,6 +48,7 @@
 <script setup>
 import { reactive, computed, watch } from 'vue'
 import PROVIDERS from '../api/providers.js'
+import { t } from '../locales/index.js'
 
 const props = defineProps({
   visible: Boolean,

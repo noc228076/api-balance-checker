@@ -4,20 +4,24 @@
       <div class="header-left">
         <h1 class="app-title">
           <span class="title-icon">🔑</span>
-          API 余额查询
+          {{ t('app.title') }}
         </h1>
-        <span class="app-subtitle">多平台 Token 额度管理工具</span>
+        <span class="app-subtitle">{{ t('app.subtitle') }}</span>
       </div>
       <div class="header-right">
-        <button class="theme-toggle" @click="isDark = !isDark" :title="isDark ? '切换亮色' : '切换暗色'">
+        <button class="theme-toggle" @click="isDark = !isDark" :title="isDark ? t('settings.lightMode') : t('settings.darkMode')">
           {{ isDark ? '☀️' : '🌙' }}
         </button>
-        <button class="btn-settings" @click="showSettings = true" title="设置">
+        <select class="language-selector" :value="currentLocale" @change="handleLocaleChange" :title="t('settings.switchLanguage')">
+          <option value="zh-CN">🇨🇳 中文</option>
+          <option value="en-US">🇺🇸 English</option>
+        </select>
+        <button class="btn-settings" @click="showSettings = true" :title="t('nav.settings')">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
         </button>
         <button class="btn-add" @click="showModal = true">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
-          添加 Key
+          {{ t('nav.addKey') }}
         </button>
       </div>
     </header>
@@ -30,15 +34,15 @@
       </div>
       <div class="stat-item">
         <span class="stat-value">${{ totalRemaining }}</span>
-        <span class="stat-label">总剩余额度</span>
+        <span class="stat-label">{{ t('stats.totalRemaining') }}</span>
       </div>
       <div class="stat-item">
         <span class="stat-value">${{ totalUsed }}</span>
-        <span class="stat-label">总已使用</span>
+        <span class="stat-label">{{ t('stats.totalUsed') }}</span>
       </div>
       <button class="btn-refresh-all" @click="refreshAll">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
-        全部刷新
+        {{ t('nav.refreshAll') }}
       </button>
     </div>
 
@@ -59,11 +63,11 @@
     <!-- 空状态 -->
     <div class="empty-state" v-else>
       <div class="empty-icon">🔑</div>
-      <h2>还没有添加任何 API Key</h2>
-      <p>点击右上角「添加 Key」按钮开始管理你的 API 额度</p>
+      <h2>{{ t('app.noKeysTitle') }}</h2>
+      <p>{{ t('app.noKeysDesc') }}</p>
       <button class="btn-add-empty" @click="showModal = true">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
-        添加第一个 Key
+        {{ t('app.addFirstKey') }}
       </button>
     </div>
 
@@ -101,11 +105,21 @@ import BalanceCard from './components/BalanceCard.vue'
 import BalanceChart from './components/BalanceChart.vue'
 import AddKeyModal from './components/AddKeyModal.vue'
 import SettingsModal from './components/SettingsModal.vue'
+import { getLocale, setLocale } from './locales/index.js'
 
 const showModal = ref(false)
 const showSettings = ref(false)
 const isDark = ref(false)
 const editingKey = ref(null)
+const currentLocale = ref(getLocale())
+
+function handleLocaleChange(event) {
+  const newLocale = event.target.value
+  setLocale(newLocale)
+  currentLocale.value = newLocale
+  // 刷新页面以应用新语言
+  window.location.reload()
+}
 
 const hasResults = computed(() => {
   return store.keys.some(k => store.results[k.id] && !store.results[k.id].error)
@@ -266,6 +280,29 @@ body {
 .theme-toggle:hover {
   border-color: var(--accent);
 }
+
+/* Language Selector */
+.language-selector {
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-width: 110px;
+}
+.language-selector:hover {
+  border-color: var(--accent);
+}
+.language-selector:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
 .btn-settings {
   width: 40px;
   height: 40px;
