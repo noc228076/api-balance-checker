@@ -132,6 +132,7 @@ export default {
     permissionDenied: 'Permission denied',
     timeout: 'Request timeout',
     unknownError: 'Unknown error',
-    openai403Hint: '💡 403 error usually means the API Key lacks balance query permissions:<br/>• Personal API Keys can usually query normally<br/>• Organization API Keys require admin permission to access billing information<br/>• Contact your organization admin for permission<br/>• Or use a personal account API Key'
+    openai403Hint: '💡 403 error usually means the API Key lacks balance query permissions:<br/>• Personal API Keys can usually query normally<br/>• Organization API Keys require admin permission to access billing information<br/>• Contact your organization admin for permission<br/>• Or use a personal account API Key',
+    balanceZeroNote: '💡 A balance of 0 is completely normal. This means your quota has been fully used or not topped up. As long as the API returns a success status (200), it can correctly display a balance of 0.'
   }
 }

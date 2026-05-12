@@ -97,7 +97,7 @@ const PROVIDERS = {
         return await queryOneApiBalance(apiKey, url)
       } catch (oneApiError) {
         console.error('[OpenAI] OneAPI 兼容接口也失败了:', oneApiError.message)
-        throw lastError || new Error('无法查询 OpenAI 余额，请检查：\n1. API Key 是否正确（以 sk- 开头）\n2. 是否使用了正确的 Base URL\n3. API Key 是否有查询余额的权限\n4. 如果是组织 Key，可能需要管理员权限\n\n提示：可以尝试使用"自定义"平台类型手动配置')
+        throw lastError || new Error('无法查询 OpenAI 余额。\n\n可能原因：\n1. API Key 不正确或已过期\n2. Base URL 配置错误\n3. API Key 没有查询余额的权限\n4. 网络连接问题\n\n提示：\n• 个人 API Key 通常可以正常查询\n• 组织 API Key 需要管理员权限\n• 可以尝试使用"自定义"平台类型手动配置')
       }
     }
   },
@@ -772,7 +772,7 @@ const PROVIDERS = {
         return await queryOneApiBalance(apiKey, url)
       } catch (oneApiError) {
         console.error('[Kimi] OneAPI 兼容接口也失败了:', oneApiError.message)
-        throw lastError || new Error('无法查询 Kimi 余额，请检查 API Key 是否正确')
+        throw lastError || new Error('无法查询 Kimi 余额。\n\n可能原因：\n1. API Key 不正确或已过期\n2. Base URL 配置错误（默认：https://api.moonshot.cn）\n3. API Key 没有查询余额的权限\n4. 网络连接问题\n\n提示：可以尝试使用"自定义"平台类型手动配置')
       }
     }
   },
@@ -840,7 +840,7 @@ const PROVIDERS = {
         return await queryOneApiBalance(apiKey, url)
       } catch (oneApiError) {
         console.error('[Mimo] OneAPI 兼容接口也失败了:', oneApiError.message)
-        throw lastError || new Error('无法查询 Mimo 余额，请检查 API Key 是否正确')
+        throw lastError || new Error('无法查询 Mimo 余额。\n\n可能原因：\n1. API Key 不正确或已过期\n2. Base URL 配置错误（默认：https://api.mimo.com）\n3. API Key 没有查询余额的权限\n4. 网络连接问题\n\n提示：可以尝试使用"自定义"平台类型手动配置')
       }
     }
   },
@@ -876,24 +876,40 @@ async function queryOneApiBalance(apiKey, baseUrl) {
 
   for (const endpoint of endpoints) {
     try {
+      console.log(`[OneAPI兼容] 尝试端点: ${endpoint}`)
       const res = await fetch(`${baseUrl}${endpoint}`, { headers })
-      if (!res.ok) continue
+      console.log(`[OneAPI兼容] ${endpoint} 响应状态:`, res.status)
+      
+      if (!res.ok) {
+        console.log(`[OneAPI兼容] ${endpoint} 返回错误，跳过`)
+        continue
+      }
 
       const data = await res.json()
+      console.log(`[OneAPI兼容] ${endpoint} 响应数据:`, JSON.stringify(data, null, 2))
 
-      // 尝试解析
+      // 尝试解析 data.data 结构
       if (data.data) {
         const d = data.data
+        // 注意：即使余额为 0，也应该能正确解析
+        const total = d.quota != null ? d.quota / 500000 : (d.total || 0)
+        const used = d.used_quota != null ? d.used_quota / 500000 : (d.used || 0)
+        const remaining = d.quota != null ? (d.quota - (d.used_quota || 0)) / 500000 : (d.remaining != null ? d.remaining : total - used)
+        
+        console.log(`[OneAPI兼容] 解析结果 - total: ${total}, used: ${used}, remaining: ${remaining}`)
+        
         return {
-          total: d.quota != null ? d.quota / 500000 : (d.total || 0),
-          used: d.used_quota != null ? d.used_quota / 500000 : (d.used || 0),
-          remaining: d.quota != null ? (d.quota - (d.used_quota || 0)) / 500000 : (d.remaining || 0),
+          total: total,
+          used: used,
+          remaining: Math.max(0, remaining), // 确保不为负数
           currency: 'USD',
           expiresAt: null
         }
       }
 
+      // 尝试解析硬限制结构
       if (data.hard_limit_usd != null) {
+        console.log(`[OneAPI兼容] 使用 hard_limit_usd 结构`)
         return {
           total: data.hard_limit_usd,
           used: 0,
@@ -902,12 +918,15 @@ async function queryOneApiBalance(apiKey, baseUrl) {
           expiresAt: data.access_until ? new Date(data.access_until * 1000).toLocaleDateString() : null
         }
       }
+      
+      console.log(`[OneAPI兼容] ${endpoint} 响应格式不符合预期，继续尝试下一个端点`)
     } catch (e) {
+      console.error(`[OneAPI兼容] ${endpoint} 请求失败:`, e.message)
       continue
     }
   }
 
-  throw new Error('无法查询余额，请检查 API Key 和 Base URL 是否正确')
+  throw new Error('无法查询余额，请检查：\n1. API Key 是否正确\n2. Base URL 是否正确\n3. 该平台是否支持余额查询\n4. 网络连接是否正常')
 }
 
 function getStartDate() {

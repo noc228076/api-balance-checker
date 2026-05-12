@@ -135,7 +135,8 @@ export default {
     permissionDenied: '权限不足',
     timeout: '请求超时',
     unknownError: '未知错误',
-    openai403Hint: '💡 403 错误通常表示 API Key 没有查询余额的权限：<br/>• 个人 API Key 通常可以正常查询<br/>• 组织 API Key 需要管理员权限才能访问账单信息<br/>• 建议联系组织管理员获取权限<br/>• 或使用个人账户的 API Key'
+    openai403Hint: '💡 403 错误通常表示 API Key 没有查询余额的权限：<br/>• 个人 API Key 通常可以正常查询<br/>• 组织 API Key 需要管理员权限才能访问账单信息<br/>• 建议联系组织管理员获取权限<br/>• 或使用个人账户的 API Key',
+    balanceZeroNote: '💡 余额为 0 是完全正常的，这表示您的额度已全部使用或未充值。只要 API 返回成功状态（200），就能正确显示余额为 0。'
   },
   chart: {
     title: '额度概览',

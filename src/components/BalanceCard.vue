@@ -97,6 +97,11 @@
       <div class="card-footer">
         <span>{{ t('card.lastUpdate') }} {{ result.queriedAt || t('card.never') }}</span>
       </div>
+      
+      <!-- 余额为 0 的提示 -->
+      <div v-if="result.remaining === 0 && result.total > 0" class="zero-balance-note">
+        {{ t('errors.balanceZeroNote') }}
+      </div>
     </div>
 
     <!-- Empty State -->
@@ -385,6 +390,16 @@ function formatNum(n) {
   text-align: center;
   padding: 30px 0;
   color: var(--text-secondary);
-  font-size: 14px;
+}
+
+.zero-balance-note {
+  margin-top: 12px;
+  padding: 10px 14px;
+  background: rgba(99, 102, 241, 0.1);
+  border-left: 3px solid var(--accent);
+  border-radius: 6px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.6;
 }
 </style>
