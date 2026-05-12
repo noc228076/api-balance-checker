@@ -121,8 +121,6 @@ export default {
     zhipuai: 'ZhipuAI',
     openrouter: 'OpenRouter',
     minimax: 'MiniMax',
-    github: 'GitHub',
-    bailian: 'Alibaba Bailian',
     kimi: 'Kimi',
     mimo: 'Mimo',
     custom: 'Custom'
