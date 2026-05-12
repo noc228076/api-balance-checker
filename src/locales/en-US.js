@@ -134,6 +134,7 @@ export default {
     timeout: 'Request timeout',
     unknownError: 'Unknown error',
     openai403Hint: '💡 403 error usually means the API Key lacks balance query permissions:<br/>• Personal API Keys can usually query normally<br/>• Organization API Keys require admin permission to access billing information<br/>• Contact your organization admin for permission<br/>• Or use a personal account API Key',
-    balanceZeroNote: '💡 A balance of 0 is completely normal. This means your quota has been fully used or not topped up. As long as the API returns a success status (200), it can correctly display a balance of 0.'
+    balanceZeroNote: '💡 A balance of 0 is completely normal. This means your quota has been fully used or not topped up. As long as the API returns a success status (200), it can correctly display a balance of 0.',
+    fetchFailed: 'Network connection failed.\n\nPossible reasons:\n1. Cannot connect to API server\n2. Network connection unstable or interrupted\n3. Firewall or proxy blocking requests\n4. API server temporarily unavailable\n\nSuggestions:\n• Check your network connection\n• Try using a proxy or VPN\n• Retry later\n• If using custom Base URL, verify the address is correct'
   }
 }

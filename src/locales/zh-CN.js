@@ -137,7 +137,8 @@ export default {
     timeout: '请求超时',
     unknownError: '未知错误',
     openai403Hint: '💡 403 错误通常表示 API Key 没有查询余额的权限：<br/>• 个人 API Key 通常可以正常查询<br/>• 组织 API Key 需要管理员权限才能访问账单信息<br/>• 建议联系组织管理员获取权限<br/>• 或使用个人账户的 API Key',
-    balanceZeroNote: '💡 余额为 0 是完全正常的，这表示您的额度已全部使用或未充值。只要 API 返回成功状态（200），就能正确显示余额为 0。'
+    balanceZeroNote: '💡 余额为 0 是完全正常的，这表示您的额度已全部使用或未充值。只要 API 返回成功状态（200），就能正确显示余额为 0。',
+    fetchFailed: '网络连接失败。\n\n可能原因：\n1. 无法连接到 API 服务器\n2. 网络连接不稳定或被中断\n3. 防火墙或代理阻止了请求\n4. API 服务器暂时不可用\n\n建议：\n• 检查网络连接\n• 尝试使用代理或 VPN\n• 稍后重试\n• 如果使用自定义 Base URL，请确认地址是否正确'
   },
   chart: {
     title: '额度概览',

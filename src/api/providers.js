@@ -2,6 +2,29 @@
  * 多平台 API 余额查询适配器
  */
 
+// 获取当前语言
+function getCurrentLocale() {
+  return localStorage.getItem('locale') || 'zh-CN'
+}
+
+// 错误消息映射
+const errorMessages = {
+  'zh-CN': {
+    fetchFailed: '网络连接失败。\n\n可能原因：\n1. 无法连接到 API 服务器\n2. 网络连接不稳定或被中断\n3. 防火墙或代理阻止了请求\n4. API 服务器暂时不可用\n\n建议：\n• 检查网络连接\n• 尝试使用代理或 VPN\n• 稍后重试\n• 如果使用自定义 Base URL，请确认地址是否正确',
+    queryFailed: '无法查询余额，请检查：\n1. API Key 是否正确\n2. Base URL 是否正确\n3. 该平台是否支持余额查询\n4. 网络连接是否正常'
+  },
+  'en-US': {
+    fetchFailed: 'Network connection failed.\n\nPossible reasons:\n1. Cannot connect to API server\n2. Network connection unstable or interrupted\n3. Firewall or proxy blocking requests\n4. API server temporarily unavailable\n\nSuggestions:\n• Check your network connection\n• Try using a proxy or VPN\n• Retry later\n• If using custom Base URL, verify the address is correct',
+    queryFailed: 'Unable to query balance, please check:\n1. API Key is correct\n2. Base URL is correct\n3. Platform supports balance query\n4. Network connection is normal'
+  }
+}
+
+// 获取错误消息
+function getErrorMessage(key) {
+  const locale = getCurrentLocale()
+  return errorMessages[locale]?.[key] || errorMessages['zh-CN'][key]
+}
+
 const PROVIDERS = {
   openai: {
     name: 'OpenAI (ChatGPT)',
@@ -61,7 +84,12 @@ const PROVIDERS = {
         }
       } catch (e) {
         console.error('[OpenAI] 订阅接口请求失败:', e.message)
-        lastError = e
+        // 特别处理 "Failed to fetch" 错误
+        if (e.message === 'Failed to fetch' || e.name === 'TypeError') {
+          lastError = new Error('网络连接失败。\n\n可能原因：\n1. 无法连接到 OpenAI API 服务器\n2. 网络连接不稳定或被中断\n3. 防火墙或代理阻止了请求\n4. API 服务器暂时不可用\n\n建议：\n• 检查网络连接\n• 尝试使用代理或 VPN\n• 稍后重试\n• 如果使用自定义 Base URL，请确认地址是否正确')
+        } else {
+          lastError = e
+        }
       }
 
       // 尝试 2: 旧版余额接口
@@ -943,6 +971,8 @@ async function queryOneApiBalance(apiKey, baseUrl) {
     '/api/status'
   ]
 
+  let networkError = null
+
   for (const endpoint of endpoints) {
     try {
       console.log(`[OneAPI兼容] 尝试端点: ${endpoint}`)
@@ -991,11 +1021,20 @@ async function queryOneApiBalance(apiKey, baseUrl) {
       console.log(`[OneAPI兼容] ${endpoint} 响应格式不符合预期，继续尝试下一个端点`)
     } catch (e) {
       console.error(`[OneAPI兼容] ${endpoint} 请求失败:`, e.message)
+      // 特别处理 "Failed to fetch" 网络错误
+      if (e.message === 'Failed to fetch' || e.name === 'TypeError') {
+        networkError = new Error(getErrorMessage('fetchFailed'))
+      }
       continue
     }
   }
 
-  throw new Error('无法查询余额，请检查：\n1. API Key 是否正确\n2. Base URL 是否正确\n3. 该平台是否支持余额查询\n4. 网络连接是否正常')
+  // 如果所有端点都失败且有网络错误，优先显示网络错误
+  if (networkError) {
+    throw networkError
+  }
+  
+  throw new Error(getErrorMessage('queryFailed'))
 }
 
 function getStartDate() {
