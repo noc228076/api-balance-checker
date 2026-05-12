@@ -20,6 +20,9 @@ dist-ssr
 releases/
 *.zip
 
+# AI Assistant configs
+.claude/
+
 # IDE
 .vscode/*
 !.vscode/extensions.json
@@ -32,14 +35,3 @@ releases/
 *.ntvs*
 *.njsproj
 *.sln
-
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
-.DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
