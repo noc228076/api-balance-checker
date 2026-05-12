@@ -37,11 +37,11 @@ const props = defineProps({
   providers: Object
 })
 
-const tabs = [
+const tabs = computed(() => [
   { key: 'bar', label: t('chart.bar') },
   { key: 'doughnut', label: t('chart.doughnut') },
   { key: 'stacked', label: t('chart.stacked') }
-]
+])
 const activeTab = ref('bar')
 
 const validEntries = computed(() => {
